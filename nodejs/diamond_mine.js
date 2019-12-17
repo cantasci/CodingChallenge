@@ -10,6 +10,8 @@ function collectMax(mat) {
   const RIGHT = 'right';
   const UP = 'up';
   const DOWN = 'down';
+  let isReachEnd = false;
+  let usedDirections = [];
 
   const ROW_COUNT = mat.length;
   if (ROW_COUNT == 0) {
@@ -98,6 +100,26 @@ function collectMax(mat) {
 
   /**
    *
+   * Check the row and the column to reach to end point
+   *
+   * @param {number} row
+   * @param {number} column
+   * @param {number} max
+   */
+  const isReachedEndPoint = (row, column, max) => {
+    const right = column == ROW_COUNT - 1 ? -1 : mat[row][column + 1],
+      down = row == COLUMN_COUNT - 1 ? -1 : mat[row + 1][column];
+
+    if (down === -1 && right === -1 && usedDirections.length > 1) {
+      isReachEnd = true;
+    }
+
+    if (isReachEnd) return true;
+    isReachEnd = row === max - 1 && column === max - 1;
+  };
+
+  /**
+   *
    * Get possible new direction
    *
    * @param {array} mat
@@ -113,24 +135,19 @@ function collectMax(mat) {
       down = row == COLUMN_COUNT - 1 ? UNDEFINED_VALUE : mat[row + 1][column];
 
     let direction = null;
-    let lookingValue = 1;
-    if (right === lookingValue) {
-      direction = RIGHT;
-    } else if (down === lookingValue) {
-      direction = DOWN;
-    } else if (left === lookingValue) {
-      direction = LEFT;
-    } else if (up === lookingValue) {
-      direction = UP;
-    } else {
-      lookingValue = 0;
-      if (right === lookingValue) {
+    let lookingValues = [0, 1];
+    isReachedEndPoint(row, column, ROW_COUNT);
+
+    if (!isReachEnd) {
+      if (lookingValues.indexOf(right) > -1) {
         direction = RIGHT;
-      } else if (down === lookingValue) {
+      } else if (lookingValues.indexOf(down) > -1) {
         direction = DOWN;
-      } else if (left === lookingValue) {
+      }
+    } else {
+      if (lookingValues.indexOf(left) > -1) {
         direction = LEFT;
-      } else if (up === lookingValue) {
+      } else if (lookingValues.indexOf(up) > -1) {
         direction = UP;
       }
     }
@@ -138,11 +155,15 @@ function collectMax(mat) {
   };
 
   while (++loopCount < MAX) {
-    // console.log(`row:${row} - column:${column} - direction:${direction} - mat:${mat}`);
+    // console.log(`row:${row} - column:${column} - isReachEnd:${isReachEnd} - usedDirections: ${usedDirections}`);
     if (isReachedStartPoint(row, column, direction)) {
       break;
     }
 
+    usedDirections = [
+      ...usedDirections.filter(v => v !== direction),
+      direction,
+    ];
     const current = mat[row][column];
     if (current === 1) {
       // collect the diamond
@@ -189,29 +210,12 @@ function collectMax(mat) {
       }
     }
   }
-
+ 
   return diamonds;
 }
 
 // test cases
-console.log(
-  collectMax([
-    [0, 1, -1],
-    [1, 0, -1],
-    [1, 1, 1],
-  ]) === 5
-);
-console.log(
-  collectMax([
-    [0, 1, -1],
-    [1, 0, -1],
-    [-1, -1, -1],
-  ]) === 2
-);
-console.log(
-  collectMax([
-    [-1, 1, -1],
-    [-1, 0, -1],
-    [-1, -1, -1],
-  ]) === 0
-);
+console.log(collectMax([[0, 1, -1], [1, 0, -1], [1, 1, 1]]) === 5);
+console.log(collectMax([[0, 1, -1], [1, 0, -1], [-1, -1, -1]]) === 2);
+console.log(collectMax([[-1, 1, -1], [-1, 0, -1], [-1, -1, -1]]) === 0);
+console.log(collectMax([[0, 1, 1], [1, 0, -1], [1, 1, -1]]) === 0);
