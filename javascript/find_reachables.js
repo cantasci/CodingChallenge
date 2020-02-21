@@ -1,7 +1,16 @@
-function solution(numRouters, numLinks, links) {
+
+/**
+ * 
+ * Get solution
+ * 
+ * @param {*} router_count 
+ * @param {*} link_count 
+ * @param {*} links 
+ */
+function solution(router_count, link_count, links) {
   
-  const tree = prepareTree(numLinks, links);
-  const foundedRouters = findRouters(tree, numRouters)
+  const tree = prepareTree(link_count, links);
+  const foundedRouters = findRouters(tree, router_count)
   return foundedRouters;
 }
 
