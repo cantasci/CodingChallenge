@@ -1,2 +1,2 @@
-# HackerRank
+# Coding Challenges
 Submissions
